@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.corner.datasource.chat.mapper.CornerChatMapper">
+
+    <select id="getChatList" resultType="com.corner.datasource.chat.model.CornerChat">
+        select a.*
+        from corner_chat a
+        <where>
+            (a.`from` = #{req.me} or a.`to` = #{req.me})
+            and create_time &lt; #{req.time}
+            and (a.`delete` is null or a.`delete` != #{req.me} )
+            and #{maxMsg} > (
+            select count(*)
+            from corner_chat b
+            where
+            ( (b.`from` = a.`from` and b.`to`=a.`to`)
+            or (b.`from` = a.`to` and b.`to`=a.`from`))
+            and b.create_time > a.create_time
+            )
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="getSpecialChatList" resultType="com.corner.datasource.chat.model.CornerChat">
+        select a.*
+        from corner_chat a
+        <where>
+            (a.`from` = #{req.me} or a.`to` = #{req.me})
+            and (a.`from` = #{req.him} or a.`to` = #{req.him})
+            and create_time &lt; #{req.time}
+        </where>
+        order by a.create_time DESC
+        limit 0, #{maxMsg}
+    </select>
+
+    <delete id="deleteDeletedChats">
+        delete from corner_chat
+        <where>
+            (`from` = #{me} or `to` = #{me})
+            and (`from` = #{him} or `to` = #{him})
+            and `delete` is not null
+        </where>
+    </delete>
+    <delete id="setChatsRead">
+        update corner_chat set `read` = 1
+        <where>
+            (`from` = #{me} or `to` = #{me})
+            and (`from` = #{him} or `to` = #{him})
+        </where>
+    </delete>
+    <update id="batchSetChatsRead">
+        update corner_chat set `read` = 1
+        <where>
+            id in
+            <foreach collection="chatIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </where>
+    </update>
+
+    <update id="setChatsDelete">
+        update corner_chat set `delete` = #{me}
+        <where>
+            (`from` = #{me} or `to` = #{me})
+            and (`from` = #{him} or `to` = #{him})
+        </where>
+    </update>
+    <insert id="save">
+        insert
+    </insert>
+
+</mapper>

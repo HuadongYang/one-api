@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试vue</title>
+    <script src="/vue.min.js"></script>
+    <script src="/element-ui.min.js"></script>
+    <link rel="stylesheet" href="/element-ui.min.css">
+</head>
+<body>
+<div id="vueController">
+    {{msg}}<br>
+    <!--这个输入框绑定msg的值-->
+    <input type="text" v-model="msg"><br>
+    <!--绑定changeMsg方法到按钮上-->
+    <input type="button" value="点我" @click="changeMsg">
+    <el-button @click="showAlert">Click me!</el-button>
+</div>
+
+<script>
+    var test = new Vue({
+        el: "#vueController",
+        data: {
+            msg: ""
+        },
+        methods: {
+            changeMsg: function () {
+                var that = this;
+                that.msg = "因崔斯听";
+            },
+            showAlert() {
+                alert('Hello, world!')
+            }
+        },
+        mounted: function () {
+            var that = this;
+            that.msg = "hello vue22";
+        }
+    })
+
+</script>
+</body>
+</html>

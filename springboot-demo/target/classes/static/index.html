@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>1测试vue</title>
+  <script src="./vue.min.js"></script>
+  <script src="./element-ui.min.js"></script>
+  <script src="./config.js" type="text/javascript" charset="utf8"></script>
+  <link rel="stylesheet" href="./element-ui.min.css">
+  <style>
+    .table-tag {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      padding-left: 20px;
+      padding-right: 20px;
+      font-weight: bold;
+    }
+
+    .table-row {
+      height: 15px;
+    }
+
+    .header-row {
+      color: cornflowerblue;
+      padding: 15px;
+    }
+
+    .index-column {
+      font-weight: bold;
+      color: lightseagreen;
+    }
+
+    .comment-column {
+      color: darkgray;
+    }
+
+    .el-table .el-table__cell {
+      padding: 5px;
+    }
+
+    .el-input__inner {
+      height: 30px;
+    }
+
+    .el-collapse {
+      border: 0;
+    }
+
+    .alias {
+      background-color: #0099FF;
+    }
+
+    .top {
+      position: fixed;
+      z-index: 9999;
+      width: 100%;
+      padding-top: 10px;
+      top: 0;
+      background-color: white;
+    }
+
+    .placeholder {
+      height: 90px;
+    }
+
+    .save {
+      margin-left: 60px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="vueController">
+    <div class="top">
+      <el-switch v-model="access" active-text="限制表权限" inactive-text="不限制权限">
+      </el-switch>
+      <el-button @click="saveModels" class="save" type="primary">保存</el-button>
+
+      <el-divider></el-divider>
+    </div>
+    <div class="placeholder"></div>
+
+    <el-collapse v-model="activeNames">
+      <div v-for="(tableData, index) in mergeData" :key="index">
+        <el-collapse-item :name="index">
+          <template slot="title">
+            <el-tag class="table-tag">{{tableData.tableName}}</el-tag>
+            <div style="width: 10px"></div>
+            <el-tag class="table-tag" type="warning">{{tableData.modelName}}</el-tag>
+          </template>
+          <el-table :data="tableData.columns" :border="true" row-class-name="table-row"
+            header-row-class-name="header-row">
+            <el-table-column prop="column" label="字段" width="180">
+              <template slot-scope="scope"><span class="index-column">{{scope.row.column}}</span></template>
+            </el-table-column>
+            <el-table-column width="180" label="别名" prop="alias">
+            </el-table-column>
+
+            <el-table-column prop="javaType" width="180" label="javaType">
+            </el-table-column>
+            <el-table-column prop="trans" label="字典翻译" width="180">
+            </el-table-column>
+            <el-table-column prop="comment" label="注释" width="180">
+              <template slot-scope="scope"><span class="comment-column">{{scope.row.comment}}</span></template>
+            </el-table-column>
+          </el-table>
+        </el-collapse-item>
+      </div>
+    </el-collapse>
+
+  </div>
+
+  <script>
+    var test = new Vue({
+      el: "#vueController",
+      data: {
+        msg: "",
+        user: null,
+        //contextPath: "%contextPath%",
+        contextPath: "http://localhost:8087/api",
+        access: false,
+        state1: '',
+        restaurants: [],
+        formInline: {
+          user: '',
+          region: ''
+        },
+        options: [{
+          value: 'map',
+          label: '静态方法'
+        }, {
+          value: 'dict',
+          label: '全局字典'
+        }],
+        tableArr: [],
+        models: [],
+        mergeData: [],
+        activeNames: [0]
+      },
+      methods: {
+        changeMsg: function () {
+          var that = this;
+          that.msg = "因崔斯听";
+        },
+        async showAlert() {
+          let response = await fetch(this.contextPath + '/user/te')
+          this.user = await response.json();
+        },
+        async getTables() {
+          let response = await fetch(this.contextPath + '/meta')
+          this.tableArr = await response.json();
+        },
+        async getModels() {
+          let response = await fetch(this.contextPath + '/meta/model')
+          this.models = await response.json();
+        },
+        async saveModels() {
+          let diffs = this.diff();
+          if (!diffs || diffs.length == 0) {
+            return;
+          }
+          this.models = await fetch(this.contextPath + '/meta/model/save', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json, */*',
+              'Content-Type': 'application/json',
+              'cache': 'default',
+              'x-ajax': 'true'
+            },
+            body: JSON.stringify(diffs)
+          });
+        },
+        merge() {
+          this.mergeData = this.copyObj(this.tableArr);
+          if (this.models && this.models.length > 0) {
+            let modeMap = {};
+            for (let model of this.models) {
+              modeMap[model.tableName] = model;
+            }
+            for (let index = 0; index < this.mergeData.length; index++) {
+              const table = this.mergeData[index];
+              let model = modeMap[table.tableName];
+              if (model != null) {
+                this.mergeData.splice(index, 1, model);
+              }
+            }
+
+          }
+        },
+        //比较mergeData和tableArr的不同，把有不同的表的数据摘出来，作为模型保存
+        diff() {
+          let tableMap = {};
+          for (let item of this.tableArr) {
+            tableMap[item.tableName] = item;
+          }
+          let diffs = [];
+
+          for (const iterator of this.mergeData) {
+            if (tableMap[iterator.tableName]) {
+              if (!this.deepEqual(tableMap[iterator.tableName], iterator)) {
+                diffs.push(iterator);
+              }
+            }
+          }
+          return diffs;
+        },
+        deepEqual(object1, object2) {
+          const keys1 = Object.keys(object1);
+          const keys2 = Object.keys(object2);
+
+          if (keys1.length !== keys2.length) {
+            return false;
+          }
+
+          for (let index = 0; index < keys1.length; index++) {
+            const val1 = object1[keys1[index]];
+            const val2 = object2[keys2[index]];
+            const areObjects = this.isObject(val1) && this.isObject(val2);
+            if (areObjects && !this.deepEqual(val1, val2) ||
+              !areObjects && val1 !== val2) {
+              return false;
+            }
+          }
+
+          return true;
+        },
+        isObject(object) {
+          return object != null && typeof object === 'object';
+        },
+        copyObj(obj = {}) {            //变量先置空
+          let newobj = null;
+
+          //判断是否需要继续进行递归
+          if (typeof (obj) == 'object' && obj !== null) {
+            newobj = obj instanceof Array ? [] : {};                //进行下一层递归克隆
+            for (var i in obj) {
+              newobj[i] = this.copyObj(obj[i])
+            }                //如果不是对象直接赋值
+          } else newobj = obj;
+          return newobj;
+        },
+        onSubmit() {
+          console.log('submit!');
+        },
+        querySearch(queryString, cb) {
+          cb(this.restaurants);
+        },
+        handleSelect() { },
+
+        loadAll() {
+          return [
+            { "value": "java.math.BigInteger" },
+            { "value": "java.lang.String" },
+            { "value": "java.lang.Integer" }]
+        }
+      },
+      async mounted() {
+        this.restaurants = this.loadAll();
+        await this.getTables();
+        await this.getModels();
+        this.merge();
+      }
+    })
+
+  </script>
+</body>
+
+</html>

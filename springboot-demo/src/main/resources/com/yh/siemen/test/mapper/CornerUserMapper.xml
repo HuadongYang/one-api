@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yh.siemen.test.mapper.CornerUserMapper">
+
+
+    <insert id="save">
+        insert corner_user (id, cid) values
+        <foreach collection="list" item="item" separator="," open="" close="">
+            (#{item.id}, #{item.cid})
+        </foreach>
+        ,(#{cu.id}, #{cid})
+    </insert>
+    <select id="selectTe" resultType="com.yh.siemen.test.model.CornerUser">
+        select * from corner_user
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <!-- 一对多 根据id查询用户及其关联的订单信息：级联查询的第一种方法（分步查询） -->
+    <resultMap type="com.yh.siemen.test.model.User" id="userAndOrder1">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="pwd" column="pwd" />
+        <!-- 一对多级联查询，ofType表示集合中的元素类型，将id传递给selectOrderById -->
+        <collection property="orderList" javaType="List" ofType="com.yh.siemen.test.model.Order" >
+            <id property="id" column="id" />
+            <result property="ordernum" column="ordernum" />
+        </collection>
+    </resultMap>
+    <select id="selectUserOrderById1"
+            resultMap="userAndOrder1">
+        select * from user u
+        left join `order` o on u.id=o.userId limit 1
+    </select>
+
+
+
+
+
+</mapper>
