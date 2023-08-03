@@ -3,7 +3,9 @@ package com.yh.siemen.test;
 import com.yz.oneapi.config.OneApiConfig;
 import com.yz.oneapi.model.ModelFacade;
 import com.yz.oneapi.model.TableModel;
+import com.yz.oneapi.model.TableModelDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
 
 import javax.sql.DataSource;
@@ -13,17 +15,18 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/meta")
+@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "dev", matchIfMissing = true)
 public class MetaApi  {
     @Autowired
     private DataSource dataSource;
     private OneApiConfig oneApiConfig;
     public MetaApi(OneApi oneApi) {
-        //autoApiConfig = new AutoApiConfig(dataSource);
+        //oneApiConfig = new OneApiConfig(dataSource);
         oneApiConfig = oneApi.getOneApiConfig();
     }
 
     @GetMapping()
-    public List<TableModel> getTables() throws SQLException, CloneNotSupportedException {
+    public List<TableModelDTO> getTables() throws SQLException, CloneNotSupportedException {
         ModelFacade modelFacade = oneApiConfig.getModelFacade();
         return modelFacade.getTableMetas();
     }

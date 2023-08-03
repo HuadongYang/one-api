@@ -1,7 +1,6 @@
 package com.yz.oneapi.parser.ast;
 
 import com.yz.oneapi.config.OneApiConfig;
-import com.yz.oneapi.core.TypeRegistry;
 import com.yz.oneapi.executor.Page;
 import com.yz.oneapi.model.ColumnModel;
 import com.yz.oneapi.model.TableModel;
@@ -15,16 +14,12 @@ import com.yz.oneapi.parser.chain.ConditionChain;
 import com.yz.oneapi.parser.expr.ConstantExpr;
 import com.yz.oneapi.parser.expr.Expression;
 import com.yz.oneapi.parser.expr.function.CountFunction;
-import com.yz.oneapi.parser.expr.select.AsteriskExpr;
-import com.yz.oneapi.parser.expr.select.ColumnExpr;
-import com.yz.oneapi.parser.expr.select.SelectExpr;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
 import com.yz.oneapi.parser.visitor.SqlAstVisitorRegistry;
+import com.yz.oneapi.utils.ClassUtil;
 import com.yz.oneapi.utils.Lists;
-import com.yz.oneapi.utils.StringPool;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -129,7 +124,7 @@ public class SelectAst extends BaseAst implements WhereAst {
             preparedSql.append(" WHERE ");
             where.accept(sqlAstVisitor);
         }
-
+        order.accept(sqlAstVisitor);
         //limit
         page.accept(sqlAstVisitor);
 
@@ -161,9 +156,8 @@ public class SelectAst extends BaseAst implements WhereAst {
     private void buildResultMapping(){
         this.resultMappings.clear();
         List<ColumnModel> columns = tableModel.getColumns();
-        TypeRegistry instance = TypeRegistry.getInstance();
         columns.forEach(column -> {
-            this.resultMappings.add(new ResultMapping.Builder(oneApiConfig, column.getAlias(), column.getColumn(), instance.getType(column.getJavaType())).build());
+            this.resultMappings.add(new ResultMapping.Builder(oneApiConfig, column.getAlias(), column.getColumn(), ClassUtil.loadClass(column.getJavaType())).build());
         });
 
     }

@@ -18,14 +18,14 @@ public class ModelFatory {
         if (metaFields == null || metaFields.size() == 0) {
             return null;
         }
-        Map<String, List<MetaField>> tableName2Fields = metaFields.stream().collect(Collectors.groupingBy(x -> x.getTableName()));
+        Map<String, List<MetaField>> tableName2Fields = metaFields.stream().collect(Collectors.groupingBy(MetaField::getTableName));
         List<TableModel> results = new ArrayList<>();
         tableName2Fields.forEach((k, v) -> {
             TableModel tableModel = new TableModel();
             tableModel.setTableName(k);
             //tableModel.setTableComment(v.get(0).getTableComment());
             if (configuration.isToCamelCase()) {
-                tableModel.setModelName(NamingCase.toSymbolCase(k, configuration.getNamingStyle()));
+                tableModel.setModelName(NamingCase.toCamelCase(k, configuration.getNamingStyle()));
             } else {
                 tableModel.setModelName(k);
             }
@@ -35,6 +35,35 @@ public class ModelFatory {
             if (v != null && v.size() > 0) {
                 v.forEach(x -> {
                     ColumnModel columnModel = getColumnModel(typeHandlerRegistry, x, configuration.isToCamelCase(), configuration.getNamingStyle());
+                    columns.add(columnModel);
+                });
+            }
+        });
+        return results;
+    }
+
+    public static List<TableModelDTO> toMultiTableModelDTO(List<MetaField> metaFields, OneApiConfig configuration) {
+        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+        if (metaFields == null || metaFields.size() == 0) {
+            return null;
+        }
+        Map<String, List<MetaField>> tableName2Fields = metaFields.stream().collect(Collectors.groupingBy(MetaField::getTableName));
+        List<TableModelDTO> results = new ArrayList<>();
+        tableName2Fields.forEach((k, v) -> {
+            TableModelDTO tableModel = new TableModelDTO();
+            tableModel.setTableName(k);
+            tableModel.setTableComment(v.get(0).getTableComment());
+            if (configuration.isToCamelCase()) {
+                tableModel.setModelName(NamingCase.toCamelCase(k, configuration.getNamingStyle()));
+            } else {
+                tableModel.setModelName(k);
+            }
+            List<ColumnModelDTO> columns = new ArrayList<>();
+            tableModel.setColumns(columns);
+            results.add(tableModel);
+            if (v != null && v.size() > 0) {
+                v.forEach(x -> {
+                    ColumnModelDTO columnModel = getColumnModelDTO(typeHandlerRegistry, x, configuration.isToCamelCase(), configuration.getNamingStyle());
                     columns.add(columnModel);
                 });
             }
@@ -55,6 +84,22 @@ public class ModelFatory {
         return columns;
     }
 
+    private static ColumnModelDTO getColumnModelDTO(TypeHandlerRegistry typeHandlerRegistry, MetaField metaField, boolean toCamelCase, Character namingStyle) {
+        ColumnModelDTO columnModel = new ColumnModelDTO();
+        columnModel.setColumn(metaField.getColumn());
+        if (toCamelCase) {
+            columnModel.setAlias(NamingCase.toCamelCase(metaField.getColumn(), namingStyle));
+        } else {
+            columnModel.setAlias(metaField.getColumn());
+        }
+        columnModel.setJavaType(JavaTypeUtils.getJavaType(metaField.getSimpleType(), metaField.getDataLength(), metaField.getDataDot(), typeHandlerRegistry));
+        columnModel.setPrimary("PRI".equals(metaField.getPrimarys()));
+        columnModel.setComment(metaField.getComment());
+        columnModel.setTrans(null);
+        columnModel.setUniqueCheck(false);
+        return columnModel;
+    }
+
     private static ColumnModel getColumnModel(TypeHandlerRegistry typeHandlerRegistry, MetaField metaField, boolean toCamelCase, Character namingStyle) {
         ColumnModel columnModel = new ColumnModel();
         columnModel.setColumn(metaField.getColumn());
@@ -63,7 +108,7 @@ public class ModelFatory {
         } else {
             columnModel.setAlias(metaField.getColumn());
         }
-        columnModel.setJavaType(JavaTypeUtils.getJavaType(metaField.getSimpleType(), metaField.getDataLength().intValue(), typeHandlerRegistry));
+        columnModel.setJavaType(JavaTypeUtils.getJavaType(metaField.getSimpleType(), metaField.getDataLength(), metaField.getDataDot(), typeHandlerRegistry));
         columnModel.setPrimary("PRI".equals(metaField.getPrimarys()));
         columnModel.setComment(metaField.getComment());
         columnModel.setTrans(null);

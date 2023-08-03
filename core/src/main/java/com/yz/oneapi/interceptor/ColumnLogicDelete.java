@@ -2,28 +2,28 @@ package com.yz.oneapi.interceptor;
 
 public class ColumnLogicDelete {
     //逻辑删除的字段
-    private ColumnIdx column;
+    private ColumnIdx source;
     //删除后字段的值
     private Object deleteValue;
 
     public ColumnLogicDelete() {
     }
 
-    public ColumnLogicDelete(ColumnIdx column, Object deleteValue) {
-        this.column = column;
+    public ColumnLogicDelete(ColumnIdx source, Object deleteValue) {
+        this.source = source;
         this.deleteValue = deleteValue;
     }
 
     public boolean isTable(String tableAlias) {
-        return tableAlias.matches(column.getTableAliasRegex());
+        return tableAlias.matches(source.getTableAliasRegex());
     }
 
-    public ColumnIdx getColumn() {
-        return column;
+    public ColumnIdx getSource() {
+        return source;
     }
 
-    public void setColumn(ColumnIdx column) {
-        this.column = column;
+    public void setSource(ColumnIdx source) {
+        this.source = source;
     }
 
     public Object getDeleteValue() {

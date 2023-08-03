@@ -38,7 +38,7 @@ public interface Interceptor {
 
     /**
      * 主键生成策略，如果为自增主键，请返回一个返回null的Supplier
-     * map的key是一个正则表达式，按map的顺序进行匹配
+     * map的key是一个正则表达式，会用表别名进行匹配，按map的顺序进行匹配
      */
     default Map<String, Supplier<Object>> getId() {
         return null;

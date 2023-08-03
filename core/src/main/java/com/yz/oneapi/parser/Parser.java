@@ -26,6 +26,6 @@ import java.util.Map;
  */
 public interface Parser {
 
-    String METHOD_MARK = "[]";
+    String BOOLEAN_FALSE = " 1 <> 1 ";
     void parse(Map<String, Object> params, WhereAst selectAst) throws SQLException;
 }

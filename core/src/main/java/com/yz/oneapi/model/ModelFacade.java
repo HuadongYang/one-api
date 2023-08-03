@@ -1,15 +1,14 @@
 package com.yz.oneapi.model;
 
+import com.yz.oneapi.config.OneApiConfig;
 import com.yz.oneapi.config.OneApiConstant;
 import com.yz.oneapi.config.OneApiException;
-import com.yz.oneapi.config.OneApiConfig;
 import com.yz.oneapi.core.DbType;
-import com.yz.oneapi.interceptor.Interceptor;
-import com.yz.oneapi.interceptor.TableAlias;
+import com.yz.oneapi.interceptor.*;
 import com.yz.oneapi.model.meta.MetaField;
 import com.yz.oneapi.model.meta.MetaRepository;
-import com.yz.oneapi.utils.OneApiUtil;
 import com.yz.oneapi.utils.NamingCase;
+import com.yz.oneapi.utils.OneApiUtil;
 import com.yz.oneapi.utils.cache.Cache;
 import com.yz.oneapi.utils.cache.CacheFactory;
 
@@ -17,6 +16,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ModelFacade implements OneApiConstant {
@@ -39,63 +39,133 @@ public class ModelFacade implements OneApiConstant {
         this.cache = CacheFactory.newLRUCache(configuration.getCacheTableCount(), configuration.getCacheTableMinutes() * 60000L);
     }
 
-    public List<TableModel> getTableMetas() throws SQLException {
+    public List<TableModelDTO> getTableMetas() throws SQLException {
         List<MetaField> metaFields = metaRepository.getMetaFields(schema, dbType);
-        List<TableModel> tableModels = ModelFatory.toMultiTableModels(metaFields, configuration);
+        List<TableModelDTO> tableModels = ModelFatory.toMultiTableModelDTO(metaFields, configuration);
         if (OneApiUtil.isEmpty(tableModels)) {
             return null;
         }
 
         Interceptor interceptor = configuration.getInterceptor();
 
-        if (interceptor != null && OneApiUtil.isNotEmpty(interceptor.alias())){
-            List<TableModel> addModels = new ArrayList<>();
-            List<TableAlias> alias = interceptor.alias();
-            Map<String, List<TableAlias>> name2Alias = alias.stream().collect(Collectors.groupingBy(TableAlias::getTableName));
-
-            Iterator<TableModel> it = tableModels.iterator();
-            while (it.hasNext()) {
-                TableModel next = it.next();
-                List<TableAlias> tableAlias = name2Alias.get(next.getTableName());
-                if (OneApiUtil.isEmpty(tableAlias)) {
-                    continue;
-                }
-                tableAlias.forEach(item->{
-                    try {
-                        TableModel clone = next.clone();
-                        addModels.add(clone);
-                        if (item.getTableAlias() != null) {
-                            clone.setModelName(item.getTableAlias());
-                        }
-                        if (OneApiUtil.isNotEmpty(item.getColumns())){
-                            Map<String, TableAlias.ColumnAlias> name2ColAlias = item.getColumns().stream().collect(Collectors.toMap(TableAlias.ColumnAlias::getColumnName, Function.identity()));
-                            clone.getColumns().forEach(col->{
-                                if (name2ColAlias.containsKey(col.getColumn())) {
-                                    TableAlias.ColumnAlias columnAlias = name2ColAlias.get(col.getColumn());
-                                    if (OneApiUtil.isNotBlank(columnAlias.getColumnAlias())) {
-                                        col.setAlias(columnAlias.getColumnAlias());
-                                    }
-                                    if (OneApiUtil.isNotBlank(columnAlias.getJavaType())) {
-                                        col.setJavaType(columnAlias.getJavaType());
-                                    }
-                                }
-                            });
-                        }
-                    } catch (CloneNotSupportedException e) {
-                        throw new RuntimeException(e);
+        if (interceptor != null) {
+            //别名
+            if (OneApiUtil.isNotEmpty(interceptor.alias())) {
+                aliasModel(tableModels, interceptor);
+            }
+            tableModels.forEach(table->{
+                //数据预热
+                if (OneApiUtil.isNotEmpty(interceptor.warmingTable())){
+                    if (interceptor.warmingTable().contains(table.getModelName())) {
+                        table.setWarming(true);
                     }
+                }
+                //字典翻译
+                if(OneApiUtil.isNotEmpty(interceptor.translate())){
+                    List<ColumnTranslate> translate = interceptor.translate();
+                    translate.forEach(t->{
+                        if (table.getModelName().matches(t.getSource().getTableAliasRegex())) {
+                            for (ColumnModelDTO c : table.getColumns()) {
+                                if (c.getAlias().equals(t.getSource().getColumnAlias())) {
+                                    c.setTrans(t.getTarget());
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                }
+                //id生成策略
+                for (Map.Entry<String, Supplier<Object>> entry : interceptor.getId().entrySet()) {
+                    String k = entry.getKey();
+                    if (table.getModelName().matches(k)) {
+                        table.setCustomId(true);
+                        break;
+                    }
+                }
+                //自动填充
+                if (OneApiUtil.isNotEmpty(interceptor.autoFill())){
+                    for (ColumnFill columnFill : interceptor.autoFill()) {
+                        if (columnFill.isTable(table.getModelName())){
+                            for (ColumnModelDTO c : table.getColumns()) {
+                                if (c.getAlias().equals(columnFill.getSource().getColumnAlias())) {
+                                    c.setAutoFill(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                //逻辑删除
+                if (OneApiUtil.isNotEmpty(interceptor.logicDelete())) {
+                    for (ColumnLogicDelete logic: interceptor.logicDelete()) {
+                        if (logic.isTable(table.getModelName())) {
+                            for (ColumnModelDTO c : table.getColumns()) {
+                                if (c.getAlias().equals(logic.getSource().getColumnAlias())) {
+                                    c.setLogicDelete(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
-                });
-                it.remove();
-            }
-            if (OneApiUtil.isNotEmpty(addModels)) {
-                tableModels.addAll(addModels);
-            }
+
+            });
+
+
         }
+
 
         return tableModels;
     }
 
+
+    private static void aliasModel(List<TableModelDTO> tableModels, Interceptor interceptor) {
+        //新增的model，一个表有多个别名，每个别名对应一个model
+        List<TableModelDTO> addModels = new ArrayList<>();
+        List<TableAlias> alias = interceptor.alias();
+        Map<String, List<TableAlias>> name2Alias = alias.stream().collect(Collectors.groupingBy(TableAlias::getTableName));
+
+        Iterator<TableModelDTO> it = tableModels.iterator();
+        while (it.hasNext()) {
+            TableModelDTO next = it.next();
+            List<TableAlias> tableAlias = name2Alias.get(next.getTableName());
+            if (OneApiUtil.isEmpty(tableAlias)) {
+                continue;
+            }
+            tableAlias.forEach(item -> {
+                try {
+                    //每个别名复制一个model
+                    TableModelDTO clone = next.clone();
+                    addModels.add(clone);
+                    if (item.getTableAlias() != null) {
+                        clone.setModelName(item.getTableAlias());
+                    }
+                    if (OneApiUtil.isNotEmpty(item.getColumns())) {
+                        Map<String, TableAlias.ColumnAlias> name2ColAlias = item.getColumns().stream().collect(Collectors.toMap(TableAlias.ColumnAlias::getColumnName, Function.identity()));
+                        clone.getColumns().forEach(col -> {
+                            if (name2ColAlias.containsKey(col.getColumn())) {
+                                TableAlias.ColumnAlias columnAlias = name2ColAlias.get(col.getColumn());
+                                if (OneApiUtil.isNotBlank(columnAlias.getColumnAlias())) {
+                                    col.setAlias(columnAlias.getColumnAlias());
+                                }
+                                if (OneApiUtil.isNotBlank(columnAlias.getJavaType())) {
+                                    col.setJavaType(columnAlias.getJavaType());
+                                }
+                            }
+                        });
+                    }
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException(e);
+                }
+
+            });
+            it.remove();
+        }
+        if (OneApiUtil.isNotEmpty(addModels)) {
+            tableModels.addAll(addModels);
+        }
+    }
 
 
     private TableModel getColumnModels(String tableName, String modelName, TableAlias tableAlias) throws SQLException {
@@ -181,7 +251,7 @@ public class ModelFacade implements OneApiConstant {
 
 
     public boolean saveColumnModels(List<TableModel> tableModels) {
-//        if (AutoApiUtil.isEmpty(tableModels)) {
+//        if (OneApiUtil.isEmpty(tableModels)) {
 //            return false;
 //        }
 //        Persistence persistence = configuration.getPersistence();

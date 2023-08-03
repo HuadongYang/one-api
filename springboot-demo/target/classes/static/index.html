@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>1测试vue</title>
+  <title>one-api</title>
   <script src="./vue.min.js"></script>
   <script src="./element-ui.min.js"></script>
   <script src="./config.js" type="text/javascript" charset="utf8"></script>
@@ -73,11 +73,12 @@
 <body>
   <div id="vueController">
     <div class="top">
-      <el-switch v-model="access" active-text="限制表权限" inactive-text="不限制权限">
-      </el-switch>
-      <el-button @click="saveModels" class="save" type="primary">保存</el-button>
+<!--      <el-switch v-model="access" active-text="限制表权限" inactive-text="不限制权限">-->
+<!--      </el-switch>-->
+<!--      <el-button @click="saveModels" class="save" type="primary">保存</el-button>-->
 
-      <el-divider></el-divider>
+<!--      <el-divider></el-divider>-->
+      <h1>ONE-API 数据结构展示</h1>
     </div>
     <div class="placeholder"></div>
 
@@ -85,9 +86,14 @@
       <div v-for="(tableData, index) in mergeData" :key="index">
         <el-collapse-item :name="index">
           <template slot="title">
-            <el-tag class="table-tag">{{tableData.tableName}}</el-tag>
+            <el-tag class="table-tag">表名： {{tableData.tableName}}</el-tag>
             <div style="width: 10px"></div>
-            <el-tag class="table-tag" type="warning">{{tableData.modelName}}</el-tag>
+            <el-tag class="table-tag" type="success">别名： {{tableData.modelName}}</el-tag>
+            <div style="width: 10px" v-if="tableData.warming"></div>
+            <el-tag class="table-tag" type="warning" v-if="tableData.warming">预热</el-tag>
+            <div style="width: 10px" v-if="tableData.customId"></div>
+            <el-tag class="table-tag" type="danger" v-if="tableData.customId">自定义主键</el-tag>
+
           </template>
           <el-table :data="tableData.columns" :border="true" row-class-name="table-row"
             header-row-class-name="header-row">
@@ -100,6 +106,12 @@
             <el-table-column prop="javaType" width="180" label="javaType">
             </el-table-column>
             <el-table-column prop="trans" label="字典翻译" width="180">
+            </el-table-column>
+            <el-table-column prop="autoFill" label="自动填充" width="180">
+              <template slot-scope="scope"><span class="comment-column">{{scope.row.autoFill ? '自动填充' : ''}}</span></template>
+            </el-table-column>
+            <el-table-column prop="logicDelete" label="逻辑删除" width="180">
+              <template slot-scope="scope"><span class="comment-column">{{scope.row.logicDelete ? '逻辑删除' : ''}}</span></template>
             </el-table-column>
             <el-table-column prop="comment" label="注释" width="180">
               <template slot-scope="scope"><span class="comment-column">{{scope.row.comment}}</span></template>

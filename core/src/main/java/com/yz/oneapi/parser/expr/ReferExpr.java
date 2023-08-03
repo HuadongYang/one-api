@@ -17,8 +17,9 @@ import java.util.Map;
  */
 public class ReferExpr extends InExpr {
 
-    private List<Object> val;
     public static final String SQL_KEY = "/";
+    private List<Object> val;
+    private Boolean refDataEmpty;
 
     public ReferExpr(ColumnModel column, Object value) {
         super(column, value);
@@ -39,6 +40,7 @@ public class ReferExpr extends InExpr {
 
             List<Object> referData = result.getData(rightModel);
             if (OneApiUtil.isEmpty(referData)) {
+                refDataEmpty = true;
                 return;
             }
             referData.forEach((obj) -> {
@@ -51,6 +53,10 @@ public class ReferExpr extends InExpr {
     @Override
     public void accept(SqlAstVisitor v) {
         v.visit(this);
+    }
+
+    public Boolean isRefDataEmpty() {
+        return refDataEmpty;
     }
 
     @Override

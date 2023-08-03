@@ -1,6 +1,7 @@
 package com.yz.oneapi.parser.visitor;
 
 import com.yz.oneapi.executor.Page;
+import com.yz.oneapi.parser.Order;
 import com.yz.oneapi.parser.ast.InsertAst;
 import com.yz.oneapi.parser.ast.SelectItems;
 import com.yz.oneapi.parser.ast.Table;
@@ -15,6 +16,7 @@ public interface SqlAstVisitor {
     void visit(CountFunction countFunction);
     void visit(AsteriskExpr asteriskExpr);
     void visit(Page page);
+    void visit(Order order);
     void visit(ConditionChain chain);
     void visit(BetweenExpr expr);
     void visit(ConstantExpr expr);

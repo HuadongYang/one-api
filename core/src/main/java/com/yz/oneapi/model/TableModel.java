@@ -23,6 +23,7 @@ public class TableModel implements Serializable, Cloneable {
     private ColumnModel primary;
 
 
+
     public ColumnModel getColumnByProperty(String property) {
         return property2Column.get(property);
     }
@@ -109,4 +110,6 @@ public class TableModel implements Serializable, Cloneable {
         clone.refresh();
         return clone;
     }
+
+
 }

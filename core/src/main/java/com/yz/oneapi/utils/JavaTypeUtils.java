@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 public class JavaTypeUtils {
 
-    public static String getJavaType(String type, int length, TypeHandlerRegistry typeHandlerRegistry) {
+    public static String getJavaType(String type, Integer length, Integer dataDot, TypeHandlerRegistry typeHandlerRegistry) {
         JdbcType jdbcType = JdbcType.forCode(type.toUpperCase());
         if (jdbcType != null) {
             BaseTypeHandler<?> typeHandler = (BaseTypeHandler) typeHandlerRegistry.getTypeHandler(jdbcType);
@@ -18,6 +18,9 @@ public class JavaTypeUtils {
         }
 
         if ("NUMBER".equalsIgnoreCase(type)) {
+            if (dataDot > 0) {
+                return Double.class.getName();
+            }
             if (length == 1) {
                 return Boolean.class.getName();
             } else if (length == 2) {

@@ -1,6 +1,8 @@
 package com.yz.oneapi.parser.visitor;
 
 import com.yz.oneapi.orm.mapping.ParameterMapping;
+import com.yz.oneapi.parser.Order;
+import com.yz.oneapi.parser.Parser;
 import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.ast.SelectItems;
 import com.yz.oneapi.parser.ast.Table;
@@ -11,6 +13,7 @@ import com.yz.oneapi.parser.expr.function.CountFunction;
 import com.yz.oneapi.parser.expr.select.AsteriskExpr;
 import com.yz.oneapi.parser.expr.select.ColumnExpr;
 import com.yz.oneapi.parser.expr.select.SelectExpr;
+import com.yz.oneapi.utils.OneApiUtil;
 import com.yz.oneapi.utils.StringPool;
 
 import java.util.List;
@@ -175,6 +178,10 @@ public abstract class AbstractSqlAstVisitor implements SqlAstVisitor {
 
     @Override
     public void visit(ReferExpr expr) {
+        if (expr.isRefDataEmpty() != null && expr.isRefDataEmpty()){
+            preparedSql.append(Parser.BOOLEAN_FALSE);
+            return;
+        }
         visit((InExpr) expr);
     }
 
@@ -194,5 +201,17 @@ public abstract class AbstractSqlAstVisitor implements SqlAstVisitor {
             preparedSql.append(StringPool.COMMA);
         });
         preparedSql.removeLast();
+    }
+
+    @Override
+    public void visit(Order order) {
+        List<Order.OrderIItem> orders = order.getOrders();
+        if (OneApiUtil.isEmpty(orders)) {
+            return;
+        }
+        preparedSql.append(order.sqlSegment());
+        orders.forEach(x->{
+            preparedSql.append(x.getColumn().getColumn()).append(StringPool.SPACE).append(x.getOrderEnum().name());
+        });
     }
 }

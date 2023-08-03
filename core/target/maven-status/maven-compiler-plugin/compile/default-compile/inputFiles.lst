@@ -56,6 +56,7 @@
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/orm/reflection/property/PropertyNamer.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/orm/reflection/package-info.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/utils/date/format/DateBasic.java
+/Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/model/TableModelDTO.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/model/TableModel.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/orm/reflection/property/PropertyTokenizer.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/orm/type/BlobInputStreamTypeHandler.java
@@ -87,6 +88,7 @@
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/parser/expr/function/CountFunction.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/parser/expr/NotEqualExpr.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/model/meta/package-info.java
+/Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/model/ColumnModelDTO.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/parser/ast/SelectAst.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/utils/convert/ConvertException.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/orm/type/JavaTypes.java
@@ -209,6 +211,7 @@
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/orm/executor/statement/package-info.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/utils/date/format/AbstractDateBasic.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/interceptor/SqlCommandType.java
+/Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/parser/ast/SelectItems.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/orm/reflection/wrapper/package-info.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/core/package-info.java
 /Users/yanghuadong/projects/code/my/one-api/core/src/main/java/com/yz/oneapi/parser/expr/Builder.java

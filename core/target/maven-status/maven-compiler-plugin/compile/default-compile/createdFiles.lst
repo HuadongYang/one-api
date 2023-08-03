@@ -78,6 +78,7 @@ com/yz/oneapi/parser/parser/LeftParenthesisTokenParser.class
 com/yz/oneapi/model/ColumnModel.class
 com/yz/oneapi/parser/expr/ExpressionRegistry$ExprFunctions.class
 com/yz/oneapi/parser/expr/GreaterEqualExpr.class
+com/yz/oneapi/model/ColumnModelDTO.class
 com/yz/oneapi/parser/expr/ConstantExpr.class
 com/yz/oneapi/orm/type/Alias.class
 com/yz/oneapi/repo/DbPersistence.class
@@ -172,6 +173,7 @@ com/yz/oneapi/utils/date/format/AbstractDateBasic.class
 com/yz/oneapi/utils/date/DateBetween.class
 com/yz/oneapi/orm/reflection/invoker/AmbiguousMethodInvoker.class
 com/yz/oneapi/utils/cache/FixedLinkedHashMap.class
+com/yz/oneapi/model/ModelFacade$1.class
 com/yz/oneapi/orm/reflection/MetaObject.class
 com/yz/oneapi/config/OneApiConfig.class
 com/yz/oneapi/utils/BooleanUtil.class
@@ -216,6 +218,7 @@ com/yz/oneapi/orm/mapping/ParameterMapBuilder.class
 com/yz/oneapi/orm/mapping/ResultMap$1.class
 com/yz/oneapi/parser/expr/function/Function.class
 com/yz/oneapi/orm/type/ShortTypeHandler.class
+com/yz/oneapi/model/ModelFacade$Lock.class
 com/yz/oneapi/orm/reflection/wrapper/MapWrapper.class
 com/yz/oneapi/utils/date/TimeInterval.class
 com/yz/oneapi/utils/date/format/FastDateParser$StrategyParser.class
@@ -277,6 +280,7 @@ com/yz/oneapi/utils/convert/AutoConvert.class
 com/yz/oneapi/utils/cache/Cache.class
 com/yz/oneapi/utils/StringPool.class
 com/yz/oneapi/orm/type/MappedJdbcTypes.class
+com/yz/oneapi/model/TableModelDTO.class
 com/yz/oneapi/orm/resultset/ResultSetWrapper.class
 com/yz/oneapi/utils/date/Week$1.class
 com/yz/oneapi/core/DbType.class

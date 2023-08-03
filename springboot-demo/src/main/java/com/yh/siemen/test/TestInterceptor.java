@@ -1,5 +1,6 @@
 package com.yh.siemen.test;
 
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.yz.oneapi.interceptor.*;
 import com.yz.oneapi.model.ColumnModel;
 import com.yz.oneapi.parser.ast.SelectAst;
@@ -9,19 +10,35 @@ import com.yz.oneapi.utils.StringUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class TestInterceptor implements Interceptor {
 
+    @Override
+    public List<TableAlias> alias() {
+        List<TableAlias> aliases = new ArrayList<>();
+        aliases.add(new TableAlias("oa_user", "user"));
+        aliases.add(new TableAlias("oa_role", "role"));
+
+        TableAlias book = new TableAlias("oa_book", "book");
+        book.setColumns(Lists.newArrayList(new TableAlias.ColumnAlias("book_id", "id")));
+        aliases.add(book);
+
+        aliases.add(new TableAlias("oa_comment", "comment"));
+        aliases.add(new TableAlias("oa_fields_types", "types"));
+        return aliases;
+    }
 
     @Override
     public Map<String, Supplier<Object>> getId() {
         Map<String, Supplier<Object>> map = new LinkedHashMap<>();
-        //map.put("sysRole", () -> null);
-        // comment表的主键自增，设置null，
-        map.put("comment", () -> null);
+        map.put("role", () -> null); //自增主键
+        map.put("comment", () -> null); //自增主键
+        map.put("types", () -> null); //自增主键
         map.put("book", () -> UUID.randomUUID().toString());
+        //user使用oneapi默认主键
         return map;
     }
 
@@ -31,25 +48,10 @@ public class TestInterceptor implements Interceptor {
      */
     @Override
     public List<String> warmingTable() {
-        return Lists.newArrayList("comment", "book", "sysUser");
+        return Lists.newArrayList("user", "role");
     }
 
-    @Override
-    public List<TableAlias> alias() {
-        List<TableAlias> aliases = new ArrayList<>();
-        //sys_user的别名设置为user
-        aliases.add(new TableAlias("sys_user", "user"));
-        //book表别名设置为book1
-        TableAlias book1 = new TableAlias("BOOK1", "book1");
-        List<TableAlias.ColumnAlias> columns = new ArrayList<>();
-        //book表的book_id字段设置别名为id
-        columns.add(new TableAlias.ColumnAlias("book_id", "id"));
-        book1.setColumns(columns);
-        aliases.add(book1);
-        //book表别名设置为book2，这样book1和book2都可以增删改查，可以走不同的数据权限
-        aliases.add(new TableAlias("book", "book2"));
-        return aliases;
-    }
+
 
     /**
      * 自动填充
@@ -90,7 +92,7 @@ public class TestInterceptor implements Interceptor {
         ColumnTranslate translate = new ColumnTranslate(new ColumnIdx("comment", "userId"), "userName");
         translate.setBatchFunction(userIds -> {
             JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-            List<Map<String, Object>> labelMap = jdbcTemplate.query(StringUtil.format("select id,name from sys_user where id in ({})", StringUtil.collectionToDelimitedString(userIds, ",", "'", "'")), (resultSet, i) -> {
+            List<Map<String, Object>> labelMap = jdbcTemplate.query(StringUtil.format("select id,name from oa_user where id in ({})", StringUtil.collectionToDelimitedString(userIds, ",", "'", "'")), (resultSet, i) -> {
                 Map<String, Object> map = new HashMap<>();
                 map.put("id",resultSet.getLong("id"));
                 map.put("name",resultSet.getString("name"));
@@ -107,7 +109,7 @@ public class TestInterceptor implements Interceptor {
         ColumnTranslate translate = new ColumnTranslate(new ColumnIdx("comment", "bookId"), "bookName");
         translate.setBatchFunction(userIds -> {
             JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-            List<Map<String, String>> labelMap = jdbcTemplate.query(StringUtil.format("select book_id,name from book where book_id in ({})", StringUtil.collectionToDelimitedString(userIds, ",", "'", "'")), (resultSet, i) -> {
+            List<Map<String, String>> labelMap = jdbcTemplate.query(StringUtil.format("select book_id,name from oa_book where book_id in ({})", StringUtil.collectionToDelimitedString(userIds, ",", "'", "'")), (resultSet, i) -> {
                 Map<String, String> map = new HashMap<>();
                 map.put("id",resultSet.getString("book_id"));
                 map.put("name",resultSet.getString("name"));
@@ -124,7 +126,7 @@ public class TestInterceptor implements Interceptor {
         ColumnTranslate translate = new ColumnTranslate(new ColumnIdx(".*", "roleCode"), "roleName");
         translate.setBatchFunction(roleCodeSets -> {
             JdbcTemplate jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-            List<Map<String, String>> labelMap = jdbcTemplate.query(StringUtil.format("select label,code from sys_role where code in ({})", StringUtil.collectionToDelimitedString(roleCodeSets, ",", "'", "'")), (resultSet, i) -> {
+            List<Map<String, String>> labelMap = jdbcTemplate.query(StringUtil.format("select label,code from oa_role where code in ({})", StringUtil.collectionToDelimitedString(roleCodeSets, ",", "'", "'")), (resultSet, i) -> {
                 Map<String, String> map = new HashMap<>();
                 map.put("label",resultSet.getString("label"));
                 map.put("code",resultSet.getString("code"));
@@ -146,7 +148,7 @@ public class TestInterceptor implements Interceptor {
      */
     @Override
     public void printSql(String sql, long executeTimeMills, SqlCommandType sqlCommandType) {
-        String sqlLogger = "\n\n==============  Sql Start  ==============\nExecute SQL : {}\nExecute Time: {}\n==============  Sql  End   ==============\n";
+        String sqlLogger = "\n==============  Sql Start  ==============\nExecute SQL : {}\nExecute Time: {}\n==============  Sql  End   ==============\n";
         System.out.println(StringUtil.format(sqlLogger, sql, executeTimeMills));
     }
 
@@ -163,15 +165,6 @@ public class TestInterceptor implements Interceptor {
         //这个表不能查询
         if ("secretFiles".equals(selectAst.getFrom().getAlias())) {
             selectAst.setAccess(false);
-        }
-        ColumnModel isDelete = selectAst.getTableModel().getColumnByProperty("isDelete");
-        if (isDelete != null && !"book1".equals(selectAst.getTableModel().getModelName())) {
-            ParenthesisExpr parenthesisExpr = new ParenthesisExpr();
-            selectAst.addWhere(parenthesisExpr)
-                    .addWhere(new EqualExpr(isDelete, 0))
-                    .addWhere(new OrExpr())
-                    .addWhere(new NullExpr(isDelete));
-            parenthesisExpr.close();
         }
     }
 

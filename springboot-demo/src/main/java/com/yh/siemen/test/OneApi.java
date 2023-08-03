@@ -38,8 +38,7 @@ public class OneApi implements InitializingBean {
         String code = request.getHeader("code");
         codeThread.set(code);
         RoutingExecutor routingExecutor = oneApiConfig.getParseExecutor();
-        ResultWrapper execute = routingExecutor.execute(map);
-        return execute;
+        return routingExecutor.execute(map);
     }
 
     public OneApiConfig getOneApiConfig() {

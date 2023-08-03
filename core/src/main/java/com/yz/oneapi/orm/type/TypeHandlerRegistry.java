@@ -58,6 +58,9 @@ public class TypeHandlerRegistry {
         register(String.class, JdbcType.NCHAR, new NStringTypeHandler());
         register(String.class, JdbcType.NCLOB, new NClobTypeHandler());
         register(JdbcType.CHAR, new StringTypeHandler());
+        register(JdbcType.ENUM, new StringTypeHandler());
+        register(JdbcType.BLOB, new StringTypeHandler());
+        register(JdbcType.JSON, new StringTypeHandler());
         register(JdbcType.VARCHAR, new StringTypeHandler());
         register(JdbcType.VARCHAR2, new StringTypeHandler());
         register(JdbcType.TEXT, new StringTypeHandler());
@@ -87,7 +90,7 @@ public class TypeHandlerRegistry {
         register(byte[].class, JdbcType.BLOB, new BlobTypeHandler());
         register(byte[].class, JdbcType.LONGVARBINARY, new BlobTypeHandler());
         register(JdbcType.LONGVARBINARY, new BlobTypeHandler());
-        register(JdbcType.BLOB, new BlobTypeHandler());
+
 
 
         register(Date.class, new DateTypeHandler());
@@ -96,7 +99,8 @@ public class TypeHandlerRegistry {
         register(JdbcType.TIMESTAMP, new DateTypeHandler());
         register(JdbcType.DATE, new DateOnlyTypeHandler());
         register(JdbcType.DATETIME, new DateOnlyTypeHandler());
-        register(JdbcType.TIME, new TimeOnlyTypeHandler());
+
+        register(JdbcType.TIME, new SqlTimeTypeHandler());
 
         register(java.sql.Date.class, new SqlDateTypeHandler());
         register(java.sql.Time.class, new SqlTimeTypeHandler());
@@ -113,6 +117,7 @@ public class TypeHandlerRegistry {
         register(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
         register(Month.class, new MonthTypeHandler());
         register(Year.class, new YearTypeHandler());
+        register(JdbcType.YEAR, new IntegerTypeHandler());
         register(YearMonth.class, new YearMonthTypeHandler());
         register(JapaneseDate.class, new JapaneseDateTypeHandler());
 

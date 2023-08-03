@@ -2,6 +2,7 @@ package com.yz.oneapi.parser.expr;
 
 import com.yz.oneapi.model.ColumnModel;
 import com.yz.oneapi.parser.ParseException;
+import com.yz.oneapi.utils.ClassUtil;
 
 public abstract class AbstractColumnType {
     protected ColumnModel column;
@@ -20,11 +21,7 @@ public abstract class AbstractColumnType {
 
     public Class<?> getType() {
         if (this.type == null) {
-            try {
-                type = Class.forName(column.getJavaType());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            type = ClassUtil.loadClass(column.getJavaType());
         }
         return this.type;
     }
