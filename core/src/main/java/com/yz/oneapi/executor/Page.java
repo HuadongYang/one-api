@@ -1,11 +1,9 @@
 package com.yz.oneapi.executor;
 
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.expr.Builder;
 import com.yz.oneapi.parser.expr.Expression;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
 import com.yz.oneapi.utils.OneApiUtil;
-import com.yz.oneapi.utils.StringUtil;
 
 import java.util.List;
 

@@ -1,9 +1,7 @@
 package com.yz.oneapi.parser.chain;
 
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.expr.*;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
-import com.yz.oneapi.utils.StringPool;
 
 /**
  * 1、既是表达式，也是节点

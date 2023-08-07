@@ -39,47 +39,31 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * todo: 参数处理，复用typeHandler V
- * todo：页面：0、实体映射 1、权限 2、字典翻译--关联表、枚举、方法 3、限流
- * todo：预设requestmapping V
- * todo: 缓存meta，缓存时间可配置；缓存时间内，meta信息不会更新
- * todo: 持久化，默认保存在项目目录，可配置; 数据库实现，利用现成的语法树
- * todo: 参数和返回值使用统一的模型
- * todo: 不同schema的表名不允许重复！！！
- * todo: 不等于 不属于 不在范围内 配置是否要把为null的数据查出来
- * todo: 提供拦截器，允许添加数据权限、角色权限、response包装
- * todo: 主键生成策略、权限扩展、主子表插入、主子表事物
- * todo: 主子表查询
- * todo: 加减字段无需重启
- * todo: 保存模型时，需要清掉所有缓存，比如DefaultResultSetHandler的autoMappingsCache，可基于event事件来做
- * todo：自增主键支持插入返回主键；其他返回自己定义的主键
- * todo: 不同数据库判断主键 mysql：PRI
- * todo: 逻辑删除、脱敏、加数据权限、字段填充、系统字段查询
- * todo: 1、自动填充 2、主子查询 3、主子插入 4、日志打印 5、权限控制 6、函数支持（比如用户id） 7、readme 8、逻辑删除 9、一个表配多个别名
- * todo: 自动填充：怎么方便的对所有表生效
- * todo: 数据预热、适配其他数据库、模型缓存时间
- * todo: 数据权限支持手写sql
- * todo: 什么风格的表名，什么风格的字段名 -—_
- * todo: oracle仅支持在Oracle 12c及以上版本中才能使用
- * todo: 展示页面把拦截器也应该展示上
- * todo: 测试更多字段类型，尽量所有的都测试一下
+ * todo：页面：限流
+ * todo: 主子表插入、主子表事物
+ * todo: 脱敏
+ * todo: 系统字段
+ * todo: oracle仅支持在Oracle 12c及以上版本中才能使用，能否支持低版本的oracle
  * todo: 4个ast的toString、更新返回主键、插入返回主键
- * todo: 压力测试
+ * todo: 逻辑删除--查询  name LIKE '%l%%'
+ * todo: 查询字段
+ * todo: 允许缓存扩展实现
+ * todo：根据主键的类型自动使用多种不同策略
+ * todo：表名、字段大写是否要转为小写
  */
 public class OneApiConfig {
 
-    private DatasourceWrapper datasourceWrapper;
+    private final DatasourceWrapper datasourceWrapper;
 
     public static OneApiConfig INSTANCE;
-    protected MetaRepository metaRepository;
-    protected ModelFacade modelFacade;
-
-    protected Persistence persistence;
-    protected ParserRegistry parserRegistry;
-    protected QueryParser queryParser;
+    private MetaRepository metaRepository;
+    private ModelFacade modelFacade;
+    private Persistence persistence;
+    private ParserRegistry parserRegistry;
+    private QueryParser queryParser;
     private RoutingExecutor routingExecutor;
-    protected SimpleExecutor executor;
-    protected SnowflakeSequence snowflakeSequence;
+    private SimpleExecutor executor;
+    private SnowflakeSequence snowflakeSequence;
 
     private int cacheTableCount = 100;
     private int cacheTableMinutes = 60;
@@ -95,31 +79,31 @@ public class OneApiConfig {
     private long datacenterId;
     private Interceptor interceptor;
 
-    protected boolean useColumnLabel = true;
+    private boolean useColumnLabel = true;
     /**
      * 命名风格，默认为下划线
      */
-    protected Character namingStyle = CharPool.UNDERSCORE;
+    private Character namingStyle = CharPool.UNDERSCORE;
     /**
-     * 下划线转驼峰
+     * 转驼峰
      */
-    protected boolean toCamelCase = true;
+    private boolean toCamelCase = true;
     /**
      * 值为空的字段是否返回
      */
-    protected boolean callSettersOnNulls = false;
+    private boolean callSettersOnNulls = false;
     /**
      * 如果选择文件存储，存储文件的路径
      */
-    protected String persistencePath = System.getProperty("user.dir");
-    protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
-    protected Integer defaultStatementTimeout;
-    protected Integer defaultFetchSize;
+    private String persistencePath = System.getProperty("user.dir");
+    private JdbcType jdbcTypeForNull = JdbcType.NULL;
+    private Integer defaultStatementTimeout;
+    private Integer defaultFetchSize;
 
-    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
-    protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
-    protected ObjectFactory objectFactory = new DefaultObjectFactory();
-    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+    private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+    private ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
+    private ObjectFactory objectFactory = new DefaultObjectFactory();
+    private ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 
 
     public OneApiConfig(DataSource dataSource) {

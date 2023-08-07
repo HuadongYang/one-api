@@ -109,8 +109,10 @@ public class ModelFatory {
             columnModel.setAlias(metaField.getColumn());
         }
         columnModel.setJavaType(JavaTypeUtils.getJavaType(metaField.getSimpleType(), metaField.getDataLength(), metaField.getDataDot(), typeHandlerRegistry));
+        columnModel.setFieldType(metaField.getSimpleType());
         columnModel.setPrimary("PRI".equals(metaField.getPrimarys()));
         columnModel.setComment(metaField.getComment());
+
         columnModel.setTrans(null);
         columnModel.setUniqueCheck(false);
         return columnModel;

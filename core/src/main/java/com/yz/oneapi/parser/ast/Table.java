@@ -1,10 +1,8 @@
 package com.yz.oneapi.parser.ast;
 
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.expr.Builder;
 import com.yz.oneapi.parser.expr.Expression;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
-import com.yz.oneapi.utils.StringPool;
 
 public class Table implements Builder, Expression {
     private String name;

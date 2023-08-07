@@ -8,7 +8,6 @@ import com.yz.oneapi.parser.ParseException;
 import com.yz.oneapi.parser.ast.WhereAst;
 import com.yz.oneapi.utils.Convert;
 import com.yz.oneapi.utils.StringPool;
-import com.yz.oneapi.utils.StringUtil;
 
 import java.util.Collection;
 import java.util.List;

@@ -11,7 +11,9 @@ import com.yz.oneapi.orm.mapping.SqlStatement;
 import com.yz.oneapi.orm.session.RowBounds;
 import com.yz.oneapi.parser.ast.SelectAst;
 import com.yz.oneapi.utils.OneApiUtil;
+import com.yz.oneapi.utils.convert.AutoConvert;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -68,18 +70,18 @@ public class MetaRepository {
             MetaField metaField = new MetaField();
             String tableName = (String) map.get("tableName");
             metaField.setTableName(dbType == DbType.MYSQL ? tableName : tableName.toLowerCase());
-            metaField.setTableComment((String)map.get("tableComment"));
+            metaField.setTableComment((String) map.get("tableComment"));
             String column = (String) map.get("column");
             metaField.setColumn(dbType == DbType.MYSQL ? column : column.toLowerCase());
-            metaField.setComment((String)map.get("comment"));
-            metaField.setType((String)map.get("type"));
-            metaField.setSimpleType((String)map.get("simpleType"));
-            metaField.setPrimarys((String)map.get("primarys"));
-            metaField.setDataLength(map.get("dataLength") == null ? 0: Integer.parseInt(String.valueOf(map.get("dataLength"))));
-            metaField.setIntLength(map.get("intLength") == null ? 0: Integer.parseInt(String.valueOf(map.get("intLength"))));
-            metaField.setDataDefaultValue((String)map.get("dataDefaultValue"));
-            metaField.setDataDot(map.get("dataDot") == null ? 0: Integer.parseInt(String.valueOf(map.get("dataDot"))));
-            metaField.setDataIsEmpty((String)map.get("dataIsEmpty"));
+            metaField.setComment((String) map.get("comment"));
+            metaField.setType((String) map.get("type"));
+            metaField.setSimpleType((String) map.get("simpleType"));
+            metaField.setPrimarys((String) map.get("primarys"));
+            metaField.setDataLength(map.get("dataLength") == null ? BigInteger.valueOf(0L) : AutoConvert.convert(BigInteger.class, map.get("dataLength")));
+            metaField.setIntLength(map.get("intLength") == null ? 0 : Integer.parseInt(String.valueOf(map.get("intLength"))));
+            metaField.setDataDefaultValue((String) map.get("dataDefaultValue"));
+            metaField.setDataDot(map.get("dataDot") == null ? 0 : Integer.parseInt(String.valueOf(map.get("dataDot"))));
+            metaField.setDataIsEmpty((String) map.get("dataIsEmpty"));
             results.add(metaField);
         });
         return results;

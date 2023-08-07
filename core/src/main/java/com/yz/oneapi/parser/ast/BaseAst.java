@@ -8,7 +8,6 @@ import com.yz.oneapi.orm.mapping.ParameterMap;
 import com.yz.oneapi.orm.mapping.ParameterMapping;
 import com.yz.oneapi.orm.reflection.MetaObject;
 import com.yz.oneapi.orm.reflection.SystemMetaObject;
-import com.yz.oneapi.parser.visitor.SqlAstVisitor;
 
 import java.util.List;
 

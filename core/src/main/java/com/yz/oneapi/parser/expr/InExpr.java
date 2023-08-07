@@ -1,11 +1,9 @@
 package com.yz.oneapi.parser.expr;
 
 import com.yz.oneapi.model.ColumnModel;
-import com.yz.oneapi.orm.mapping.ParameterMapping;
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
-import com.yz.oneapi.utils.OneApiUtil;
 import com.yz.oneapi.utils.CharPool;
+import com.yz.oneapi.utils.OneApiUtil;
 import com.yz.oneapi.utils.StringPool;
 import com.yz.oneapi.utils.StringUtil;
 import com.yz.oneapi.utils.convert.AutoConvert;
@@ -13,7 +11,6 @@ import com.yz.oneapi.utils.convert.AutoConvert;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 值为逗号分割

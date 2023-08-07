@@ -7,6 +7,8 @@ import sun.misc.ClassLoaderUtil;
 import java.lang.reflect.Array;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,6 +35,33 @@ public class ClassUtil {
     private static final char INNER_CLASS_SEPARATOR = '$';
 
     private static final Map<String, Class<?>> PRIMITIVE_TYPE_NAME_MAP = new ConcurrentHashMap<>(32);
+
+    static {
+        final List<Class<?>> primitiveTypes = new ArrayList<>(32);
+
+        // 加入原始类型数组类型
+        primitiveTypes.add(boolean[].class);
+        primitiveTypes.add(byte[].class);
+        primitiveTypes.add(char[].class);
+        primitiveTypes.add(double[].class);
+        primitiveTypes.add(float[].class);
+        primitiveTypes.add(int[].class);
+        primitiveTypes.add(long[].class);
+        primitiveTypes.add(short[].class);
+        // 加入原始类型
+        primitiveTypes.add(boolean.class);
+        primitiveTypes.add(byte.class);
+        primitiveTypes.add(char.class);
+        primitiveTypes.add(double.class);
+        primitiveTypes.add(float.class);
+        primitiveTypes.add(int.class);
+        primitiveTypes.add(long.class);
+        primitiveTypes.add(short.class);
+        primitiveTypes.add(void.class);
+        for (final Class<?> primitiveType : primitiveTypes) {
+            PRIMITIVE_TYPE_NAME_MAP.put(primitiveType.getName(), primitiveType);
+        }
+    }
 
     /**
      * 加载类，通过传入类的字符串，返回其对应的类名<br>

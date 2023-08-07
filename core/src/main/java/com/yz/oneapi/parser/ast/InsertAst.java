@@ -1,13 +1,12 @@
 package com.yz.oneapi.parser.ast;
 
-import com.yz.oneapi.config.OneApiException;
 import com.yz.oneapi.config.OneApiConfig;
+import com.yz.oneapi.config.OneApiException;
 import com.yz.oneapi.interceptor.ColumnFill;
 import com.yz.oneapi.interceptor.SqlCommandType;
 import com.yz.oneapi.model.ColumnModel;
 import com.yz.oneapi.model.TableModel;
 import com.yz.oneapi.orm.mapping.ParameterMap;
-import com.yz.oneapi.orm.mapping.ParameterMapping;
 import com.yz.oneapi.orm.mapping.ResultMap;
 import com.yz.oneapi.orm.mapping.SqlStatement;
 import com.yz.oneapi.parser.PreparedSql;
@@ -15,7 +14,6 @@ import com.yz.oneapi.parser.expr.select.ColumnExpr;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
 import com.yz.oneapi.parser.visitor.SqlAstVisitorRegistry;
 import com.yz.oneapi.utils.OneApiUtil;
-import com.yz.oneapi.utils.Lists;
 import com.yz.oneapi.utils.convert.AutoConvert;
 
 import java.util.*;
@@ -54,7 +52,7 @@ public class InsertAst extends BaseAst {
         param.forEach((property, value) -> {
             ColumnModel columnByProperty = tableModel.getColumnByProperty(property);
             if (columnByProperty == null) {
-                throw new OneApiException("no fount the column : {}", property);
+                throw new OneApiException("no found the column : {}", property);
             }
             ColumnExpr key = new ColumnExpr(columnByProperty);
             this.value.computeIfAbsent(key, k -> new Object[size]);

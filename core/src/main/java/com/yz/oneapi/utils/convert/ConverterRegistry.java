@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * 将各种类型Convert对象放入登记中心，通过convert方法查找目标类型对应的转换器，将被转换对象转换之。
  * </p>
  * <p>
- * 在此类中，存放着默认转换器和自定义转换器，默认转换器是Hutool中预定义的一些转换器，自定义转换器存放用户自定的转换器。
+ * 在此类中，存放着默认转换器和自定义转换器
  * </p>
  *
  * @author Looly

@@ -1,6 +1,5 @@
 package com.yz.oneapi.parser.expr.select;
 
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
 
 /**

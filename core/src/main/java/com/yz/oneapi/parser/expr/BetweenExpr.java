@@ -1,16 +1,12 @@
 package com.yz.oneapi.parser.expr;
 
 import com.yz.oneapi.model.ColumnModel;
-import com.yz.oneapi.orm.mapping.ParameterMapping;
 import com.yz.oneapi.parser.Ordered;
 import com.yz.oneapi.parser.ParseException;
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
 import com.yz.oneapi.utils.CharPool;
 import com.yz.oneapi.utils.StringUtil;
 import com.yz.oneapi.utils.convert.AutoConvert;
-
-import java.util.UUID;
 
 public class BetweenExpr extends AbstractExpr implements Ordered {
     private Object start;

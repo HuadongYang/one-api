@@ -4,7 +4,6 @@ import com.yz.oneapi.orm.reflection.MetaObject;
 import com.yz.oneapi.orm.reflection.SystemMetaObject;
 import com.yz.oneapi.orm.reflection.factory.ObjectFactory;
 import com.yz.oneapi.orm.reflection.property.PropertyTokenizer;
-import com.yz.oneapi.utils.CharPool;
 import com.yz.oneapi.utils.NamingCase;
 
 import java.util.HashMap;

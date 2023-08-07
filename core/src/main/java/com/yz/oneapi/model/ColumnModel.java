@@ -6,6 +6,7 @@ public class ColumnModel implements Serializable, Cloneable {
     private String column;
     private String alias;
     private String javaType;
+    private String fieldType;
     private Boolean primary;
     private String comment;
     private Boolean uniqueCheck;
@@ -75,6 +76,14 @@ public class ColumnModel implements Serializable, Cloneable {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+    public String getFieldType() {
+        return fieldType;
+    }
+
+    public void setFieldType(String fieldType) {
+        this.fieldType = fieldType;
     }
 
     @Override

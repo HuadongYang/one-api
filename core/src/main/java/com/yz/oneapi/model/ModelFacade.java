@@ -116,6 +116,7 @@ public class ModelFacade implements OneApiConstant {
         }
 
 
+        tableModels = tableModels.stream().sorted(Comparator.comparing(TableModelDTO::getTableName)).collect(Collectors.toList());
         return tableModels;
     }
 

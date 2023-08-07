@@ -1,7 +1,6 @@
 package com.yz.oneapi.parser.expr.select;
 
 import com.yz.oneapi.model.ColumnModel;
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.expr.AbstractColumnType;
 import com.yz.oneapi.parser.expr.Builder;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;

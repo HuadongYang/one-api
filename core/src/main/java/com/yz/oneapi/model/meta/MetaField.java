@@ -1,6 +1,5 @@
 package com.yz.oneapi.model.meta;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class MetaField {
@@ -15,7 +14,7 @@ public class MetaField {
     private String simpleType;
     //PRI UNI
     private String primarys;
-    private Integer dataLength;
+    private BigInteger dataLength;
     private Integer intLength;
     private String dataDefaultValue;
     private Integer dataDot;
@@ -95,11 +94,11 @@ public class MetaField {
         this.dataIsEmpty = dataIsEmpty;
     }
 
-    public Integer getDataLength() {
+    public BigInteger getDataLength() {
         return dataLength;
     }
 
-    public void setDataLength(Integer dataLength) {
+    public void setDataLength(BigInteger dataLength) {
         this.dataLength = dataLength;
     }
 

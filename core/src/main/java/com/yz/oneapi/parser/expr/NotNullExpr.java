@@ -2,7 +2,6 @@ package com.yz.oneapi.parser.expr;
 
 import com.yz.oneapi.model.ColumnModel;
 import com.yz.oneapi.parser.Ordered;
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
 import com.yz.oneapi.utils.CharPool;
 

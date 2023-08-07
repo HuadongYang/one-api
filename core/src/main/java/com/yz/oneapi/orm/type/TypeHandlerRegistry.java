@@ -59,7 +59,7 @@ public class TypeHandlerRegistry {
         register(String.class, JdbcType.NCLOB, new NClobTypeHandler());
         register(JdbcType.CHAR, new StringTypeHandler());
         register(JdbcType.ENUM, new StringTypeHandler());
-        register(JdbcType.BLOB, new StringTypeHandler());
+        register(JdbcType.BLOB, new BlobTypeHandler());
         register(JdbcType.JSON, new StringTypeHandler());
         register(JdbcType.VARCHAR, new StringTypeHandler());
         register(JdbcType.VARCHAR2, new StringTypeHandler());
@@ -96,11 +96,12 @@ public class TypeHandlerRegistry {
         register(Date.class, new DateTypeHandler());
         register(Date.class, JdbcType.DATE, new DateOnlyTypeHandler());
         register(Date.class, JdbcType.TIME, new TimeOnlyTypeHandler());
-        register(JdbcType.TIMESTAMP, new DateTypeHandler());
-        register(JdbcType.DATE, new DateOnlyTypeHandler());
+        register(JdbcType.TIMESTAMP, new LocalDateTimeTypeHandler());
+        //oracle必须使用DateTypeHandler
+        register(JdbcType.DATE, new DateTypeHandler());
         register(JdbcType.DATETIME, new DateOnlyTypeHandler());
 
-        register(JdbcType.TIME, new SqlTimeTypeHandler());
+        register(JdbcType.TIME, new LocalTimeTypeHandler());
 
         register(java.sql.Date.class, new SqlDateTypeHandler());
         register(java.sql.Time.class, new SqlTimeTypeHandler());

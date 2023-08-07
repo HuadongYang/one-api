@@ -1,10 +1,8 @@
 package com.yh.siemen.test;
 
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.yz.oneapi.interceptor.*;
-import com.yz.oneapi.model.ColumnModel;
 import com.yz.oneapi.parser.ast.SelectAst;
-import com.yz.oneapi.parser.expr.*;
+import com.yz.oneapi.parser.expr.NotEqualExpr;
 import com.yz.oneapi.utils.Lists;
 import com.yz.oneapi.utils.StringUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,7 +12,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class TestInterceptor implements Interceptor {
+public class DemoInterceptor implements Interceptor {
+
+    private final AtomicInteger id = new AtomicInteger(0);
+    private final String code = "normal";
 
     @Override
     public List<TableAlias> alias() {
@@ -34,9 +35,17 @@ public class TestInterceptor implements Interceptor {
     @Override
     public Map<String, Supplier<Object>> getId() {
         Map<String, Supplier<Object>> map = new LinkedHashMap<>();
+        //mysql自增主键
         map.put("role", () -> null); //自增主键
         map.put("comment", () -> null); //自增主键
         map.put("types", () -> null); //自增主键
+
+        //oracle主键
+//        map.put("role", () -> id.addAndGet(1)); //自增主键
+//        map.put("comment", () -> id.addAndGet(1)); //自增主键
+//        map.put("types", () -> id.addAndGet(1)); //自增主键
+
+
         map.put("book", () -> UUID.randomUUID().toString());
         //user使用oneapi默认主键
         return map;
@@ -159,7 +168,7 @@ public class TestInterceptor implements Interceptor {
     @Override
     public void authority(SelectAst selectAst) {
         //如果不是admin角色且当前查询的是book表，那么书名是"涉密档案"的书不允许返回
-        if (!"admin".equals(OneApi.codeThread.get()) && "book".equals(selectAst.getFrom().getAlias())) {
+        if (!"admin".equals(code) && "book".equals(selectAst.getFrom().getAlias())) {
             selectAst.addWhere(new NotEqualExpr(selectAst.getTableModel().getColumnByProperty("name"), "涉密档案"));
         }
         //这个表不能查询

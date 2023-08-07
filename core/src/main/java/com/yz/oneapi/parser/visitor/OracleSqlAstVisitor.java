@@ -11,13 +11,19 @@ import com.yz.oneapi.parser.expr.select.ColumnExpr;
 import com.yz.oneapi.utils.Lists;
 import com.yz.oneapi.utils.StringUtil;
 import com.yz.oneapi.utils.convert.AutoConvert;
+import com.yz.oneapi.utils.date.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.yz.oneapi.utils.date.format.DatePattern.NORM_DATETIME_PATTERN;
+
 public class OracleSqlAstVisitor extends AbstractSqlAstVisitor {
+    private static final String oracleDateFormat = "yyyy-mm-dd hh24:mi:ss";
+
     public OracleSqlAstVisitor(PreparedSql preparedSql) {
         super(preparedSql);
     }
@@ -77,14 +83,28 @@ public class OracleSqlAstVisitor extends AbstractSqlAstVisitor {
 
     private void insertPlaceholder(InsertAst insertAst, List<ColumnExpr> columns, int i) {
         for (int j = 0; j < columns.size(); j++) {
+
+            //parameterMapping
+            String id = UUID.randomUUID().toString();
+            Object value = insertAst.getValue().get(columns.get(j))[i];
+            if (value instanceof Date || "java.util.Date".equals(columns.get(j).getColumn().getJavaType())) {
+                if (StringUtil.equals("date", columns.get(j).getColumn().getFieldType(), true)){
+                    preparedSql.append(StringUtil.format("to_date(?, '{}')", oracleDateFormat));
+                    if (j < columns.size() - 1) {
+                        preparedSql.append(",");
+                    }
+                    preparedSql.put(id,  DateUtil.format((Date) value, NORM_DATETIME_PATTERN));
+                    preparedSql.add(new ParameterMapping.Builder(preparedSql.getConfiguration(), id, String.class).build());
+                    continue;
+                }
+            }
             preparedSql.append("?");
             if (j < columns.size() - 1) {
                 preparedSql.append(",");
             }
-            //parameterMapping
-            String id = UUID.randomUUID().toString();
-            preparedSql.put(id, insertAst.getValue().get(columns.get(j))[i]);
+            preparedSql.put(id, value);
             preparedSql.add(new ParameterMapping.Builder(preparedSql.getConfiguration(), id, columns.get(j).getType()).build());
         }
     }
+
 }

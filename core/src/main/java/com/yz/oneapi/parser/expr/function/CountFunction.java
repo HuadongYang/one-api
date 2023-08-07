@@ -1,6 +1,5 @@
 package com.yz.oneapi.parser.expr.function;
 
-import com.yz.oneapi.parser.PreparedSql;
 import com.yz.oneapi.parser.expr.Expression;
 import com.yz.oneapi.parser.expr.select.SelectExpr;
 import com.yz.oneapi.parser.visitor.SqlAstVisitor;
