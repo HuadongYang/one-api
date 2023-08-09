@@ -43,10 +43,10 @@ public class ModelFatory {
     }
 
     public static List<TableModelDTO> toMultiTableModelDTO(List<MetaField> metaFields, OneApiConfig configuration) {
-        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
         if (metaFields == null || metaFields.size() == 0) {
             return null;
         }
+        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
         Map<String, List<MetaField>> tableName2Fields = metaFields.stream().collect(Collectors.groupingBy(MetaField::getTableName));
         List<TableModelDTO> results = new ArrayList<>();
         tableName2Fields.forEach((k, v) -> {
@@ -112,9 +112,6 @@ public class ModelFatory {
         columnModel.setFieldType(metaField.getSimpleType());
         columnModel.setPrimary("PRI".equals(metaField.getPrimarys()));
         columnModel.setComment(metaField.getComment());
-
-        columnModel.setTrans(null);
-        columnModel.setUniqueCheck(false);
         return columnModel;
     }
 }

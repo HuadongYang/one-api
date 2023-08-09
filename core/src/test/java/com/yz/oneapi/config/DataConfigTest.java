@@ -47,7 +47,7 @@ public class DataConfigTest {
         SelectAst selectAst = new SelectAst("select * from corner_user");
         ModelFacade modelFacade = oneApiConfig.getModelFacade();
 
-        TableModel tableModel = modelFacade.getColumnModelsByModelName("cornerUser");
+        TableModel tableModel = modelFacade.getModelByModelName("cornerUser");
 
 
         List<ResultMapping> resultMappings = new ArrayList<>();
@@ -71,7 +71,7 @@ public class DataConfigTest {
         SelectAst selectAst = new SelectAst("select * from corner_user");
         ModelFacade modelFacade = oneApiConfig.getModelFacade();
 
-        TableModel tableModel = modelFacade.getColumnModelsByModelName("cornerUser");
+        TableModel tableModel = modelFacade.getModelByModelName("cornerUser");
 
 
         List<ResultMap> resultMaps = new ArrayList<>();

@@ -9,8 +9,6 @@ public class ColumnModel implements Serializable, Cloneable {
     private String fieldType;
     private Boolean primary;
     private String comment;
-    private Boolean uniqueCheck;
-    private String trans;
     private String modelName;
 
     public String getColumn() {
@@ -44,22 +42,6 @@ public class ColumnModel implements Serializable, Cloneable {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public Boolean getUniqueCheck() {
-        return uniqueCheck;
-    }
-
-    public void setUniqueCheck(Boolean uniqueCheck) {
-        this.uniqueCheck = uniqueCheck;
-    }
-
-    public String getTrans() {
-        return trans;
-    }
-
-    public void setTrans(String trans) {
-        this.trans = trans;
     }
 
     public Boolean getPrimary() {

@@ -41,18 +41,17 @@ public class ModelFacade implements OneApiConstant {
 
     public List<TableModelDTO> getTableMetas() throws SQLException {
         List<MetaField> metaFields = metaRepository.getMetaFields(schema, dbType);
-        List<TableModelDTO> tableModels = ModelFatory.toMultiTableModelDTO(metaFields, configuration);
-        if (OneApiUtil.isEmpty(tableModels)) {
+        if (OneApiUtil.isEmpty(metaFields)) {
             return null;
         }
-
+        List<TableModelDTO> tableModels = ModelFatory.toMultiTableModelDTO(metaFields, configuration);
         Interceptor interceptor = configuration.getInterceptor();
-
         if (interceptor != null) {
             //别名
             if (OneApiUtil.isNotEmpty(interceptor.alias())) {
                 aliasModel(tableModels, interceptor);
             }
+
             tableModels.forEach(table->{
                 //数据预热
                 if (OneApiUtil.isNotEmpty(interceptor.warmingTable())){
@@ -108,19 +107,17 @@ public class ModelFacade implements OneApiConstant {
                         }
                     }
                 }
-
-
             });
-
-
         }
-
-
         tableModels = tableModels.stream().sorted(Comparator.comparing(TableModelDTO::getTableName)).collect(Collectors.toList());
         return tableModels;
     }
 
-
+    /**
+     * 一个表可以对应多个别名，一个别名对应一个模型
+     * @param tableModels   由表结构转化而来
+     * @param interceptor
+     */
     private static void aliasModel(List<TableModelDTO> tableModels, Interceptor interceptor) {
         //新增的model，一个表有多个别名，每个别名对应一个model
         List<TableModelDTO> addModels = new ArrayList<>();
@@ -179,7 +176,7 @@ public class ModelFacade implements OneApiConstant {
             //缓存中tableName，拦截器中没有对应的model，则说明这个table被手动别名了，自动别名不能被查到
             return null;
         } else {
-            //
+            //加锁
             Lock lock = lockMap.get(modelName);
             if (lock == null) {
                 lock = new Lock();
@@ -211,9 +208,9 @@ public class ModelFacade implements OneApiConstant {
         }
         //扩展接口的字段别名
         if (tableAlias != null) {
-            List<ColumnModel> columns = tableModel.getColumns();
             List<TableAlias.ColumnAlias> columnAlias = tableAlias.getColumns();
             if (OneApiUtil.isNotEmpty(columnAlias)) {
+                List<ColumnModel> columns = tableModel.getColumns();
                 Map<String, TableAlias.ColumnAlias> column2Alias = columnAlias.stream().collect(Collectors.toMap(TableAlias.ColumnAlias::getColumnName, Function.identity()));
                 columns.forEach(x -> {
                     if (column2Alias.containsKey(x.getColumn())) {
@@ -227,7 +224,7 @@ public class ModelFacade implements OneApiConstant {
         return tableModel;
     }
 
-    public TableModel getColumnModelsByModelName(String modelName) throws SQLException {
+    public TableModel getModelByModelName(String modelName) throws SQLException {
         String tableName = modelName;
         TableAlias tableAlias = null;
         if (configuration.getInterceptor() != null

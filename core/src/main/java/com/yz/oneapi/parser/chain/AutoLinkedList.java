@@ -5,9 +5,6 @@ import com.yz.oneapi.config.OneApiException;
 import java.util.*;
 import java.util.function.Consumer;
 
-/**
- * AutoLinkedList有些点无法满足，但里边但内部类都是private，无法继承
- */
 public class AutoLinkedList<E> extends AbstractSequentialList<E>
         implements List<E>, Deque<E>, Cloneable, java.io.Serializable
 {

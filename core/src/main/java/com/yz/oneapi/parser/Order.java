@@ -9,26 +9,26 @@ import java.util.List;
 
 public class Order implements Expression {
 
-    private List<OrderIItem> orders;
+    private List<OrderItem> orders;
 
     public Order() {
         orders = new ArrayList<>();
     }
 
-    public List<OrderIItem> getOrders() {
+    public List<OrderItem> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<OrderIItem> orders) {
+    public void setOrders(List<OrderItem> orders) {
         this.orders = orders;
     }
 
     public void addOrder(ColumnModel column, OrderEnum orderEnum) {
-        orders.add(new OrderIItem(column, orderEnum == null ? OrderEnum.ASC : orderEnum));
+        orders.add(new OrderItem(column, orderEnum == null ? OrderEnum.ASC : orderEnum));
     }
 
     public void addOrder(ColumnModel column) {
-        orders.add(new OrderIItem(column, OrderEnum.ASC));
+        orders.add(new OrderItem(column, OrderEnum.ASC));
     }
 
     @Override
@@ -41,11 +41,11 @@ public class Order implements Expression {
         v.visit(this);
     }
 
-    public static class OrderIItem {
+    public static class OrderItem {
         private ColumnModel column;
         private OrderEnum orderEnum;
 
-        public OrderIItem(ColumnModel column, OrderEnum orderEnum) {
+        public OrderItem(ColumnModel column, OrderEnum orderEnum) {
             this.column = column;
             this.orderEnum = orderEnum;
         }

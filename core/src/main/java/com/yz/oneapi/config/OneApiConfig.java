@@ -65,7 +65,13 @@ public class OneApiConfig {
     private SimpleExecutor executor;
     private SnowflakeSequence snowflakeSequence;
 
+    /**
+     * 缓存的表结构数量
+     */
     private int cacheTableCount = 100;
+    /**
+     * 表结构缓存时间
+     */
     private int cacheTableMinutes = 60;
 
     /**
@@ -347,7 +353,7 @@ public class OneApiConfig {
             new Thread(()->{
                 interceptor.warmingTable().forEach(modelName->{
                     try {
-                        getModelFacade().getColumnModelsByModelName(modelName);
+                        getModelFacade().getModelByModelName(modelName);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }

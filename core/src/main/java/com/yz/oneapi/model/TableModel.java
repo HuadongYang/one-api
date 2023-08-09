@@ -15,7 +15,6 @@ public class TableModel implements Serializable, Cloneable {
     private String modelName;
 
     private String tableComment;
-    private Boolean access;
 
     private List<ColumnModel> columns;
     private Map<String, ColumnModel> property2Column;
@@ -60,13 +59,6 @@ public class TableModel implements Serializable, Cloneable {
         this.tableName = tableName;
     }
 
-    public Boolean getAccess() {
-        return access;
-    }
-
-    public void setAccess(Boolean access) {
-        this.access = access;
-    }
 
     public List<ColumnModel> getColumns() {
         return columns;

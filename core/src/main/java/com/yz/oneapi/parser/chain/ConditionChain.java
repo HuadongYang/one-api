@@ -32,11 +32,6 @@ public class ConditionChain extends AutoLinkedList<Expression> implements Expres
         this.parent = parent;
     }
 
-    /**
-     * 遍历所有节点，构建PreparedSql
-     *
-     * @return
-     */
     @Override
     public String sqlSegment() {
         return null;

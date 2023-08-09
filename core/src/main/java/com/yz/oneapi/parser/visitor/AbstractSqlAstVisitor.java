@@ -205,7 +205,7 @@ public abstract class AbstractSqlAstVisitor implements SqlAstVisitor {
 
     @Override
     public void visit(Order order) {
-        List<Order.OrderIItem> orders = order.getOrders();
+        List<Order.OrderItem> orders = order.getOrders();
         if (OneApiUtil.isEmpty(orders)) {
             return;
         }
